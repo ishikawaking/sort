@@ -4,6 +4,7 @@
 #define N 2999
 
 int A[N];
+int B[N];
 
 // *p と *q の値を入れ替える関数
 void swap(int *p, int *q){
@@ -14,27 +15,28 @@ void swap(int *p, int *q){
 }
 
 int sp(int A[], int n){
-    int i, B[(n+4)/5];
-    if(n<=5){return quick_selectA(A,n,n/2,0,0);}
+    //ピボットを選ぶ関数
+    int i;
+    if(n<=5){return quick_select(A,n,n/2);}
     else {
         for(i = 0 ; i < n/5 ; i++){
-            B[i] = quick_selectA(A+5*i, 5, 2, 0, 0);
+            B[i] = quick_select(A+5*i, 5, 2);
         }
-        if(n%5 != 0){B[i] = quick_selectA(A+5*i, n%5, (n%5)/2, 0, 0);}
+        if(n%5 != 0){B[i] = quick_select(A+5*i, n%5, (n%5)/2);}
         return sp(B, (n+4)/5);
     }
 }
 
-int quick_selectA(int A[], int n, int k, int p, int o){
+int quick_select(int A[], int n, int k){
     int i, j, pivot;
-    if(p == 0){
+    if(n <= 5){
         pivot = A[n/2];
         A[n/2] = A[0];
         A[0] = pivot;
-    }else if(i == 1){
+    }else{
+        pivot = sp(A, n);
         for(i=0;i<n;i++){
-            if(A[i] == o){
-                pivot = A[i];
+            if(A[i] == pivot){
                 A[i] = A[0];
                 A[0] = pivot;
             }
@@ -53,15 +55,6 @@ int quick_selectA(int A[], int n, int k, int p, int o){
     else return quick_select(A+1, j-1, k);
 }
 
-int quick_select(int A[], int n, int k){
-    if(n <= 5){
-        return quick_selectA(A,n,k,0,0);
-    }else{
-        int pivot = sp(A,n);
-        return quick_selectA(A,n,k,1,pivot);
-    }
-}
-
 int main(){
   int i;
   A[0] = 0;
@@ -70,7 +63,7 @@ int main(){
     A[i] = (long long int) A[i-1] * A[1] % N;
   }
   for(i=0;i<N;i++){
-//    if(quick_select(A, N, i) != i) printf("ERROR %d %d\n", i, quick_select(A, N, i));
-    printf("%d th element is %d\n", i, quick_select(A, N, i));
+    if(quick_select(A, N, i) != i) printf("ERROR %d %d\n", i, quick_select(A, N, i));
+//    printf("%d th element is %d\n", i, quick_select(A, N, i));
   }
 }
